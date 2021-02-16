@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:employeeapplication/employee_login_page.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.user}) : super(key: key);
@@ -70,9 +71,17 @@ class _MainPageState extends State<MainPage> {
                 trailing: Icon(Icons.note_add),
               ),
               ListTile(
-                title: Text('Log out'),
-                trailing: Icon(Icons.logout),
-              ),
+                  title: Text('Log out'),
+                  trailing: Icon(Icons.logout),
+                  onTap: () {
+                    _auth.signOut().then((res) {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EmployeeLoginPage()),
+                          (Route<dynamic> route) => false);
+                    });
+                  }),
             ],
           ),
         ));
