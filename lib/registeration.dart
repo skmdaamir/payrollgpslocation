@@ -1,8 +1,9 @@
+import 'package:employeeapplication/employee_login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:employeeapplication/bezier_container.dart';
-import 'package:employeeapplication/employee_login_page.dart';
+import 'package:employeeapplication/main_page.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'dart:io';
 import 'package:firebase_database/firebase_database.dart';
@@ -23,11 +24,17 @@ class _SignUpPageState extends State<SignUpPage> {
   File _image;
   bool _isLoading = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  User result = FirebaseAuth.instance.currentUser;
   final databaseReference =
       FirebaseDatabase.instance.reference().child("Employee-Database");
   final _storage = FirebaseStorage.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String name, contactno, email, password, imageUrl;
+  String imageUrl;
+
+  TextEditingController name = new TextEditingController();
+  TextEditingController contactno = new TextEditingController();
+  TextEditingController email = new TextEditingController();
+  TextEditingController password = new TextEditingController();
 
   getImageFile(ImageSource source) async {
     var image = await ImagePicker.pickImage(source: source);
@@ -78,6 +85,15 @@ class _SignUpPageState extends State<SignUpPage> {
         content: Text(onError),
       ));
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    name.dispose();
+    contactno.dispose();
+    email.dispose();
+    password.dispose();
   }
 
   Widget _backButton() {
@@ -132,11 +148,7 @@ class _SignUpPageState extends State<SignUpPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            onChanged: (val) {
-              setState(() {
-                name = val;
-              });
-            },
+            controller: name,
             keyboardType: TextInputType.name,
             decoration: const InputDecoration(
               labelText: "Full Name",
@@ -161,11 +173,7 @@ class _SignUpPageState extends State<SignUpPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            onChanged: (val) {
-              setState(() {
-                contactno = val;
-              });
-            },
+            controller: contactno,
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               labelText: "Contact No",
@@ -190,11 +198,7 @@ class _SignUpPageState extends State<SignUpPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            onChanged: (val) {
-              setState(() {
-                email = val;
-              });
-            },
+            controller: email,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
               labelText: "Email",
@@ -219,11 +223,7 @@ class _SignUpPageState extends State<SignUpPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            onChanged: (val) {
-              setState(() {
-                password = val;
-              });
-            },
+            controller: password,
             obscureText: true,
             decoration: const InputDecoration(
               labelText: "Password",
@@ -259,7 +259,6 @@ class _SignUpPageState extends State<SignUpPage> {
         onPressed: () async {
           if (_formKey.currentState.validate()) {
             _registerAccount();
-            sendData();
           }
         },
         child: Text("Register",
@@ -436,17 +435,15 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void _registerAccount() async {
     final User user = (await _auth.createUserWithEmailAndPassword(
-            email: email.toString(), password: password.toString()))
+            email: email.text, password: password.text))
         .user;
-
     if (user != null) {
+      sendData();
       if (!user.emailVerified) {
         await user.sendEmailVerification();
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => MainPage()));
       }
-
-      // await user.updateProfile(displayName: displayName.text);
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => EmployeeLoginPage()));
     }
   }
 }

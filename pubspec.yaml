@@ -38,6 +38,8 @@ dependencies:
   firebase_core: any
   firebase_storage: any
   firebase_database: ^6.0.0
+  splashscreen : 1.2.0
+  
 
 
 

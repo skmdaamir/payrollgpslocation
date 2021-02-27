@@ -1,3 +1,4 @@
+import 'package:employeeapplication/Constants.dart';
 import 'package:employeeapplication/main_page.dart';
 import 'package:employeeapplication/registeration.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -248,10 +249,9 @@ class _EmployeeLoginPageState extends State<EmployeeLoginPage> {
       if (!user.emailVerified) {
         await user.sendEmailVerification();
       }
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-        return MainPage(
-          user: user,
-        );
+      Constants.prefs.setBool("loggedin", true);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
+        return MainPage();
       }));
     } catch (e) {
       _scaffoldKey.currentState.showSnackBar(
