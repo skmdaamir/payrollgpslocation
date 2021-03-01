@@ -71,8 +71,11 @@ class _MainPageState extends State<MainPage> {
                 trailing: Icon(Icons.logout),
                 onTap: () async {
                   await _auth.signOut();
-                  Navigator.of(context).pop();
                   Constants.prefs.setBool("loggedin", false);
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EmployeeLoginPage()));
                 },
               ),
             ],
