@@ -29,9 +29,9 @@ class _SignUpPageState extends State<SignUpPage> {
       FirebaseDatabase.instance.reference().child("Employee-Database");
   final _storage = FirebaseStorage.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String imageUrl;
+  String photoUrl;
 
-  TextEditingController name = new TextEditingController();
+  TextEditingController displayName = new TextEditingController();
   TextEditingController contactno = new TextEditingController();
   TextEditingController email = new TextEditingController();
   TextEditingController password = new TextEditingController();
@@ -65,18 +65,18 @@ class _SignUpPageState extends State<SignUpPage> {
       var downloadUrl = await snapshot.ref.getDownloadURL();
 
       setState(() {
-        imageUrl = downloadUrl;
-        print(imageUrl);
+        photoUrl = downloadUrl;
+        print(photoUrl);
       });
     } else {
       print('No Path Received');
     }
 
     databaseReference.push().set({
-      "name": name.toString(),
+      "name": displayName.toString(),
       "contact-no": contactno.toString(),
       'email': email.toString(),
-      'imageUrl': imageUrl.toString(),
+      'imageUrl': photoUrl.toString(),
     }).then((_) {
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text('Registeration Successfully')));
@@ -90,7 +90,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void dispose() {
     super.dispose();
-    name.dispose();
+    displayName.dispose();
     contactno.dispose();
     email.dispose();
     password.dispose();
@@ -148,7 +148,7 @@ class _SignUpPageState extends State<SignUpPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            controller: name,
+            controller: displayName,
             keyboardType: TextInputType.name,
             decoration: const InputDecoration(
               labelText: "Full Name",
@@ -259,6 +259,7 @@ class _SignUpPageState extends State<SignUpPage> {
         onPressed: () async {
           if (_formKey.currentState.validate()) {
             _registerAccount();
+            sendData();
           }
         },
         child: Text("Register",
@@ -438,9 +439,9 @@ class _SignUpPageState extends State<SignUpPage> {
             email: email.text, password: password.text))
         .user;
     if (user != null) {
-      sendData();
       if (!user.emailVerified) {
         await user.sendEmailVerification();
+
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MainPage()));
       }

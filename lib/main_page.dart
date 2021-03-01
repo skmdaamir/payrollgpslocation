@@ -1,11 +1,7 @@
-import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import 'package:flutter/material.dart';
+import 'package:employeeapplication/Constants.dart';
 import 'package:employeeapplication/employee_login_page.dart';
-import 'package:http/http.dart' as http;
-import 'dart:async';
-import 'package:employeeapplication/user_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -15,37 +11,16 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User user;
-  final String url =
-      'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyCaN8IM8LbgtFZo_Wspcw0tnFWlurnBIzI';
-
-  List data;
 
   @override
   void initState() {
     super.initState();
-    this.getJsonData();
     initUser();
   }
 
   initUser() async {
     user = _auth.currentUser;
     setState(() {});
-  }
-
-  Future<String> getJsonData() async {
-    var response = await http.get(
-        // Encode the url
-        Uri.encodeFull(url),
-        headers: {'Accept': 'application/json'});
-
-    print(response.body);
-
-    setState(() {
-      var convertDataToJson = json.decode(response.body);
-      data = convertDataToJson['Employee-Database'];
-    });
-
-    return 'Success';
   }
 
   @override
@@ -55,18 +30,15 @@ class _MainPageState extends State<MainPage> {
           title: Text('Attendance'),
           backgroundColor: Colors.orangeAccent,
         ),
-        body: ListView.builder(
-            itemCount: data == null ? 0 : data.length,
-            itemBuilder: (BuildContext context, int index) {}),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
               UserAccountsDrawerHeader(
-                accountName: Text("${user.displayName}"),
-                accountEmail: Text('${user.email}'),
+                accountName: Text('${user?.displayName}'),
+                accountEmail: Text('${user?.email}'),
                 currentAccountPicture: CircleAvatar(
-                  backgroundImage: NetworkImage("${user.photoURL}"),
+                  backgroundImage: NetworkImage('${user?.photoURL}'),
                 ),
                 decoration: BoxDecoration(color: Colors.orangeAccent),
               ),
@@ -95,17 +67,14 @@ class _MainPageState extends State<MainPage> {
                 trailing: Icon(Icons.note_add),
               ),
               ListTile(
-                  title: Text('Log out'),
-                  trailing: Icon(Icons.logout),
-                  onTap: () {
-                    _auth.signOut().then((res) {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EmployeeLoginPage()),
-                          (Route<dynamic> route) => false);
-                    });
-                  }),
+                title: Text('Log out'),
+                trailing: Icon(Icons.logout),
+                onTap: () async {
+                  await _auth.signOut();
+                  Navigator.of(context).pop();
+                  Constants.prefs.setBool("loggedin", false);
+                },
+              ),
             ],
           ),
         ));
