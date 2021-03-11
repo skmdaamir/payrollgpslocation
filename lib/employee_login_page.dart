@@ -1,4 +1,3 @@
-import 'package:employeeapplication/Constants.dart';
 import 'package:employeeapplication/main_page.dart';
 import 'package:employeeapplication/registeration.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,8 +18,8 @@ class _EmployeeLoginPageState extends State<EmployeeLoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   FirebaseAuth _auth = FirebaseAuth.instance;
-  TextEditingController emailController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
+  TextEditingController email = new TextEditingController();
+  TextEditingController password = new TextEditingController();
 
   Widget _emailField(String title) {
     return Container(
@@ -29,7 +28,7 @@ class _EmployeeLoginPageState extends State<EmployeeLoginPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            controller: emailController,
+            controller: email,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
               labelText: "Email",
@@ -54,7 +53,7 @@ class _EmployeeLoginPageState extends State<EmployeeLoginPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            controller: passwordController,
+            controller: password,
             obscureText: true,
             decoration: const InputDecoration(
               labelText: "Password",
@@ -244,12 +243,11 @@ class _EmployeeLoginPageState extends State<EmployeeLoginPage> {
   void _signinWithEmailPassword() async {
     try {
       final User user = (await _auth.signInWithEmailAndPassword(
-              email: emailController.text, password: passwordController.text))
+              email: email.text, password: password.text))
           .user;
       if (!user.emailVerified) {
         await user.sendEmailVerification();
       }
-      Constants.prefs.setBool("loggedin", true);
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
         return MainPage();
       }));

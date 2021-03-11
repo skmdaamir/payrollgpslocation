@@ -25,11 +25,7 @@ class IntroScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     User result = FirebaseAuth.instance.currentUser;
     return SplashScreen(
-        navigateAfterSeconds: result != null
-            ? MainPage(
-                // uid: result.uid
-                )
-            : EmployeeLoginPage(),
+        navigateAfterSeconds: result != null ? MainPage() : EmployeeLoginPage(),
         seconds: 3,
         backgroundColor: Colors.orangeAccent,
         title: Text(

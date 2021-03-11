@@ -13,25 +13,25 @@ class Employee {
     this.name,
     this.contactno,
     this.email,
-    this.imageUrl,
+    this.photoUrl,
   });
 
   String name;
   String contactno;
   String email;
-  String imageUrl;
+  String photoUrl;
 
   factory Employee.fromJson(Map<String, dynamic> json) => Employee(
         name: json["name"],
         contactno: json["contactno"],
         email: json["email"],
-        imageUrl: json["imageUrl"],
+        photoUrl: json["photoUrl"],
       );
 
   Map<String, dynamic> toJson() => {
         "name": name,
         "contactno": contactno,
         "email": email,
-        "imageUrl": imageUrl,
+        "photoUrl": photoUrl,
       };
 }

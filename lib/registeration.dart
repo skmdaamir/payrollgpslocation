@@ -64,36 +64,28 @@ class _SignUpPageState extends State<SignUpPage> {
       // ignore: await_only_futures
       var downloadUrl = await snapshot.ref.getDownloadURL();
 
-      setState(() {
-        photoUrl = downloadUrl;
-        print(photoUrl);
-      });
+      // setState(() {
+      photoUrl = downloadUrl;
+      print(photoUrl);
+      // });
     } else {
       print('No Path Received');
     }
+    print(displayName.text);
+    print(contactno.text);
+    print(email.text);
+    print(photoUrl.toString());
 
     databaseReference.push().set({
-      "name": displayName.toString(),
-      "contact-no": contactno.toString(),
-      'email': email.toString(),
-      'imageUrl': photoUrl.toString(),
+      "displayName": displayName.text,
+      "contactno": contactno.text,
+      'email': email.text,
+      'photoUrl': photoUrl.toString(),
     }).then((_) {
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text('Registeration Successfully')));
+      print('Registered');
     }).catchError((onError) {
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(onError),
-      ));
+      print('error occured');
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    displayName.dispose();
-    contactno.dispose();
-    email.dispose();
-    password.dispose();
   }
 
   Widget _backButton() {
@@ -435,16 +427,30 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _registerAccount() async {
+    print(email.text);
+    print(password.text);
     final User user = (await _auth.createUserWithEmailAndPassword(
             email: email.text, password: password.text))
         .user;
     if (user != null) {
+      // sendData();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainPage(),
+        ),
+      );
       if (!user.emailVerified) {
         await user.sendEmailVerification();
-
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MainPage()));
       }
+      // await user.updateProfile(
+      //   displayName: displayName,
+      //   // photoURL: photoUrl,
+      // );
+      // final user1 = _auth.currentUser;
+
+      // Navigator.pushReplacement(
+      //     context, MaterialPageRoute(builder: (context) => MainPage()));
     }
   }
 }
